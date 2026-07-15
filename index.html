@@ -538,10 +538,10 @@
 
   <script>
     // 弹幕配置 - 使用腾讯云开发HTTP API
-    const DANMAKU_API_URL = 'https://jiner-d7gnxult00d8ee047-1445043895.ap-shanghai.app.tcloudbase.com';
+    const DANMAKU_API_URL = ''; // 同域名 Pages Functions
     let danmakuListening = false;
     let lastDanmakuTime = Date.now();
-    let useLocalMode = !DANMAKU_API_URL; // 如果没有配置API地址，使用本地模式
+    let useLocalMode = false; // 云端同步
     const DANMAKU_STORAGE_KEY = 'photo_ball_danmaku';
     let danmakuRetryCount = 0;
     const MAX_RETRY_COUNT = 3;
