@@ -543,10 +543,13 @@
     let lastDanmakuTime = Date.now();
     let useLocalMode = false; // 使用 Pages Functions 云端同步
     const DANMAKU_STORAGE_KEY = 'photo_ball_danmaku';
+    let danmakuRetryCount = 0;
+    const MAX_RETRY_COUNT = 3;
 
     // 初始化弹幕服务
     function initDanmakuService() {
       console.log('弹幕服务初始化中...');
+      initDanmaku(); // 初始化轨道系统
       startDanmakuListener();
     }
 
