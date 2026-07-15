@@ -648,6 +648,8 @@
         if (!password) { loginError.textContent = '请输入密码'; return; }
         if (VALID_PASSWORDS.includes(password)) {
           overlay.classList.add('hidden');
+          // 登录成功后加载弹幕
+          if (window._startDanmaku) window._startDanmaku();
         } else {
           loginError.textContent = '密码错误';
           passwordInput.value = '';
@@ -1192,8 +1194,8 @@
       Promise.all(promises).then(() => {
         createPhotoSprites();
         animate();
-        // 球出来后再显示弹幕
-        initDanmakuService();
+        // 弹幕等登录后再加载
+        window._startDanmaku = function() { initDanmakuService(); };
       });
     }
 
