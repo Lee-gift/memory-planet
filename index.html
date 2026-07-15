@@ -549,7 +549,6 @@
     // 初始化弹幕服务
     function initDanmakuService() {
       console.log('弹幕服务初始化中...');
-      initDanmaku();
       startDanmakuListener();
     }
 
@@ -718,7 +717,8 @@
       danmakuTracks: [] // 轨道系统，防止弹幕重叠
     };
 
-    initDanmakuService(); // 弹幕初始化（state已定义）
+    initDanmaku(); // 初始化弹幕轨道
+    initDanmakuService(); // 加载历史弹幕并开始监听
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000105, 0.032);
@@ -1081,19 +1081,6 @@
       Promise.all(promises).then(() => {
         createPhotoSprites();
         animate();
-        
-        // 等待Firebase SDK加载完成后再初始化弹幕
-        if (typeof firebase !== 'undefined') {
-          initDanmaku();
-        } else {
-          // 如果Firebase还没加载，等待一下再尝试
-          const checkFirebase = setInterval(() => {
-            if (typeof firebase !== 'undefined') {
-              clearInterval(checkFirebase);
-              initDanmaku();
-            }
-          }, 100);
-        }
       });
     }
 
