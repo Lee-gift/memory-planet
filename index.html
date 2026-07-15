@@ -538,10 +538,10 @@
 
   <script>
     // 弹幕配置 - 使用腾讯云开发HTTP API
-    const DANMAKU_API_URL = 'https://danmaku-api.2510103064.workers.dev';
+    const DANMAKU_API_URL = ''; // 使用同域名 Pages Functions（/api/danmaku）
     let danmakuListening = false;
     let lastDanmakuTime = Date.now();
-    let useLocalMode = !DANMAKU_API_URL; // 如果没有配置API地址，使用本地模式
+    let useLocalMode = false; // 使用 Pages Functions 云端同步
     const DANMAKU_STORAGE_KEY = 'photo_ball_danmaku';
 
     // 初始化弹幕服务
