@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API测试</title>
+  <style>
+    body { padding: 20px; background: #1a1a2e; color: white; font-family: Arial; }
+    button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+    #result { background: #333; padding: 10px; margin: 10px; min-height: 100px; }
+  </style>
+</head>
+<body>
+  <h1>弹幕API测试</h1>
+  
+  <button onclick="testList()">测试获取列表</button>
+  <button onclick="testAdd()">测试发送弹幕</button>
+  
+  <div id="result"></div>
+
+  <script>
+    const API_URL = 'https://jiner-d7gnxult00d8ee047-1445043895.ap-shanghai.app.tcloudbase.com/api/danmaku';
+
+    function log(msg) {
+      document.getElementById('result').innerHTML += msg + '<br>';
+    }
+
+    async function testList() {
+      log('--- 测试获取列表 ---');
+      try {
+        const response = await fetch(API_URL + '?action=list');
+        log('状态码: ' + response.status);
+        const text = await response.text();
+        log('响应: ' + text);
+      } catch (error) {
+        log('错误: ' + error.message);
+      }
+    }
+
+    async function testAdd() {
+      log('--- 测试发送弹幕 ---');
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'add',
+            text: '测试弹幕',
+            color: '#ffffff',
+            timestamp: Date.now()
+          })
+        });
+        log('状态码: ' + response.status);
+        const text = await response.text();
+        log('响应: ' + text);
+      } catch (error) {
+        log('错误: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>

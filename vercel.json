@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/danmaku.js": {
+      "runtime": "@vercel/edge"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/danmaku/(.*)",
+      "dest": "/api/danmaku.js"
+    }
+  ]
+}

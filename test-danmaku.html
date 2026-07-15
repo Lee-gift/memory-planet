@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>弹幕测试</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #1a1a2e;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    #danmaku-container {
+      height: 300px;
+      border: 1px solid #444;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .danmaku-item {
+      position: absolute;
+      white-space: nowrap;
+      font-size: 20px;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #logs {
+      background: #333;
+      padding: 10px;
+      height: 150px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>弹幕功能测试</h1>
+  
+  <div id="danmaku-container"></div>
+  
+  <input type="text" id="danmaku-input" placeholder="输入弹幕内容">
+  <button onclick="sendDanmaku()">发送</button>
+  <button onclick="loadDanmaku()">加载历史弹幕</button>
+  
+  <div id="logs"></div>
+
+  <script>
+    const API_URL = 'https://jiner-d7gnxult00d8ee047.tcloudbaseapp.com';
+    const container = document.getElementById('danmaku-container');
+    const input = document.getElementById('danmaku-input');
+    const logs = document.getElementById('logs');
+
+    function log(msg) {
+      logs.innerHTML += msg + '\n';
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    async function sendDanmaku() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const colors = ['#ffffff', '#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da', '#fcbad3'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      try {
+        log(`发送弹幕: ${text}`);
+        const response = await fetch(`${API_URL}/api/danmaku`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'add',
+            text: text,
+            color: color,
+            timestamp: Date.now()
+          })
+        });
+        
+        const result = await response.json();
+        log(`响应: ${JSON.stringify(result)}`);
+        
+        if (result.code === 0) {
+          input.value = '';
+          createDanmaku(text, color);
+        }
+      } catch (error) {
+        log(`发送失败: ${error.message}`);
+      }
+    }
+
+    async function loadDanmaku() {
+      try {
+        log('加载历史弹幕...');
+        const response = await fetch(`${API_URL}/api/danmaku?action=list`);
+        const result = await response.json();
+        log(`响应: ${JSON.stringify(result)}`);
+        
+        if (result.code === 0 && result.data) {
+          result.data.forEach((danmaku, index) => {
+            setTimeout(() => {
+              createDanmaku(danmaku.text, danmaku.color);
+            }, index * 200);
+          });
+        }
+      } catch (error) {
+        log(`加载失败: ${error.message}`);
+      }
+    }
+
+    function createDanmaku(text, color) {
+      const item = document.createElement('div');
+      item.className = 'danmaku-item';
+      item.textContent = text;
+      item.style.color = color;
+      item.style.top = Math.random() * 80 + '%';
+      item.style.left = '100%';
+      item.style.fontSize = (16 + Math.random() * 8) + 'px';
+      
+      container.appendChild(item);
+
+      let pos = 100;
+      const speed = 0.3 + Math.random() * 0.3;
+      
+      function move() {
+        pos -= speed;
+        item.style.left = pos + '%';
+        
+        if (pos > -50) {
+          requestAnimationFrame(move);
+        } else {
+          item.remove();
+        }
+      }
+      
+      move();
+    }
+  </script>
+</body>
+</html>
