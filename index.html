@@ -539,6 +539,8 @@
   <script>
     // 弹幕配置 - 使用腾讯云开发HTTP API
     const DANMAKU_API_URL = ''; // 同域名 Pages Functions
+    var state; // 全局
+    var danmakuContainer; // 全局
     let danmakuListening = false;
     let lastDanmakuTime = Date.now();
     let useLocalMode = false; // 云端同步
@@ -550,6 +552,28 @@
     function initDanmakuService() {
       console.log('弹幕服务初始化中...');
       startDanmakuListener();
+    }
+
+    // 创建弹幕DOM元素（全局函数）
+    function createDanmakuElement(text, color = '#fff') {
+      if (!state || !state.danmakuEnabled) return;
+      const danmakuItem = document.createElement('div');
+      danmakuItem.className = 'danmaku-item';
+      danmakuItem.textContent = text;
+      danmakuItem.style.color = color;
+      const trackIndex = Math.floor(Math.random() * (state.danmakuTracks || []).length);
+      const topPos = trackIndex * 40 + Math.random() * 20;
+      danmakuItem.style.top = topPos + 'px';
+      const screenWidth = window.innerWidth;
+      danmakuItem.style.left = screenWidth + 'px';
+      danmakuContainer.appendChild(danmakuItem);
+      const textWidth = danmakuItem.offsetWidth;
+      const duration = 8 + (textWidth / screenWidth) * 4;
+      const animation = danmakuItem.animate([
+        { transform: 'translateX(0)' },
+        { transform: 'translateX(-' + (screenWidth + textWidth) + 'px)' }
+      ], { duration: duration * 1000, easing: 'linear' });
+      animation.onfinish = function() { danmakuItem.remove(); };
     }
 
     // 加载历史弹幕并开始监听
@@ -681,7 +705,7 @@
     const slideshowClose = document.getElementById('slideshowClose');
     
     // 弹幕相关元素
-    const danmakuContainer = document.getElementById('danmakuContainer');
+    danmakuContainer = document.getElementById('danmakuContainer');
     const danmakuInput = document.getElementById('danmakuInput');
     const sendDanmakuBtn = document.getElementById('sendDanmakuBtn');
     const danmakuToggle = document.getElementById('danmakuToggle');
@@ -698,7 +722,7 @@
         'picture_jin/photo81.jpg', 'picture_jin/photo82.jpg', 'picture_jin/photo83.jpg', 'picture_jin/photo84.jpg', 'picture_jin/photo85.jpg', 'picture_jin/photo86.jpg', 'picture_jin/photo87.jpg', 'picture_jin/photo88.jpg', 'picture_jin/photo89.jpg', 'picture_jin/photo90.jpg',
         'picture_jin/photo91.jpg', 'picture_jin/photo92.jpg', 'picture_jin/photo93.jpg'
       ];
-    const state = {
+    state = {
       photos: [],
       photoSprites: [],
       isOpen: false,
@@ -878,42 +902,6 @@
       state.danmakuTracks = new Array(trackCount).fill(0);
     }
 
-    function createDanmakuElement(text, color = '#fff') {
-      if (!state.danmakuEnabled) return;
-
-      const danmakuItem = document.createElement('div');
-      danmakuItem.className = 'danmaku-item';
-      danmakuItem.textContent = text;
-      danmakuItem.style.color = color;
-
-      // 随机选择轨道
-      const trackIndex = Math.floor(Math.random() * state.danmakuTracks.length);
-      const topPos = trackIndex * 40 + Math.random() * 20;
-      danmakuItem.style.top = `${topPos}px`;
-
-      // 设置初始位置在屏幕右侧
-      const screenWidth = window.innerWidth;
-      danmakuItem.style.left = `${screenWidth}px`;
-
-      danmakuContainer.appendChild(danmakuItem);
-
-      // 计算弹幕速度（基于文本长度）
-      const textWidth = danmakuItem.offsetWidth;
-      const duration = 8 + (textWidth / screenWidth) * 4; // 8-12秒
-
-      // 动画
-      const animation = danmakuItem.animate([
-        { transform: 'translateX(0)' },
-        { transform: `translateX(-${screenWidth + textWidth}px)` }
-      ], {
-        duration: duration * 1000,
-        easing: 'linear'
-      });
-
-      animation.onfinish = () => {
-        danmakuItem.remove();
-      };
-    }
 
     async function sendDanmaku() {
       const text = danmakuInput.value.trim();
