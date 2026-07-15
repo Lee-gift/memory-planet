@@ -741,8 +741,7 @@
       danmakuTracks: [] // 轨道系统，防止弹幕重叠
     };
 
-    initDanmaku(); // 初始化弹幕轨道
-    initDanmakuService(); // 加载历史弹幕并开始监听
+    initDanmaku(); // 初始化弹幕轨道（球加载完后 initDanmakuService 再加载弹幕）
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000105, 0.032);
@@ -1069,6 +1068,8 @@
       Promise.all(promises).then(() => {
         createPhotoSprites();
         animate();
+        // 球出来后再显示弹幕
+        initDanmakuService();
       });
     }
 
