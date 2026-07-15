@@ -662,9 +662,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // 立即初始化弹幕服务
-      initDanmakuService();
-      
+
     const mount = document.getElementById('stage');
     const playBtn = document.getElementById('playBtn');
     const openBtn = document.getElementById('openBtn');
@@ -719,6 +717,9 @@
       danmakuEnabled: true,
       danmakuTracks: [] // 轨道系统，防止弹幕重叠
     };
+
+    // state 定义完成后初始化弹幕服务
+    initDanmakuService();
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000105, 0.032);
