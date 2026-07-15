@@ -538,18 +538,15 @@
 
   <script>
     // 弹幕配置 - 使用腾讯云开发HTTP API
-    const DANMAKU_API_URL = ''; // 使用同域名 Pages Functions（/api/danmaku）
+    const DANMAKU_API_URL = 'https://jiner-d7gnxult00d8ee047-1445043895.ap-shanghai.app.tcloudbase.com';
     let danmakuListening = false;
     let lastDanmakuTime = Date.now();
-    let useLocalMode = false; // 使用 Pages Functions 云端同步
+    let useLocalMode = !DANMAKU_API_URL; // 如果没有配置API地址，使用本地模式
     const DANMAKU_STORAGE_KEY = 'photo_ball_danmaku';
-    let danmakuRetryCount = 0;
-    const MAX_RETRY_COUNT = 3;
 
     // 初始化弹幕服务
     function initDanmakuService() {
       console.log('弹幕服务初始化中...');
-      initDanmaku(); // 初始化轨道系统
       startDanmakuListener();
     }
 
@@ -662,7 +659,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-
+      // 立即初始化弹幕服务
+      initDanmakuService();
+      
     const mount = document.getElementById('stage');
     const playBtn = document.getElementById('playBtn');
     const openBtn = document.getElementById('openBtn');
@@ -717,9 +716,6 @@
       danmakuEnabled: true,
       danmakuTracks: [] // 轨道系统，防止弹幕重叠
     };
-
-    // state 定义完成后初始化弹幕服务
-    initDanmakuService();
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000105, 0.032);
